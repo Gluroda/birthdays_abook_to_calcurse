@@ -38,13 +38,13 @@ def _check_files():
 
 def _pull_calcurse(file):
     """ Extracts all birthdays that are stored in calcurse as a set. """
-    pattern = "\d\d\/\d\d\/\d{4} \[1\] {1Y} Geburtstag .*"
+    pattern = f"\d\d\/\d\d\/\d{4} \[1\] {{1Y}} {BIRTHDAY} .*"
     st = set()
     with open(file, 'r') as f:
         data = f.read()
         ite = re.finditer(pattern, data)
     for i in ite:
-        bday, name = i[0].split('Geburtstag ')
+        bday, name = i[0].split(f'{BIRTHDAY} ')
         bday = dt.strptime(bday[:10], '%m/%d/%Y')
         st.add((name, bday))
     return st
@@ -75,14 +75,14 @@ def _reformat_date(indate):
 
 def _write_to_calcurse(outfile, st):
     """ Adds all birthday-entries above other existent appointments in calcurse apts-file. """
-    pattern = "\d\d\/\d\d\/\d{4} \[1\] {1Y} Geburtstag .*\n"
+    pattern = f"\d\d\/\d\d\/\d{4} \[1\] {{1Y}} {BIRTHDAY} .*\n"
     with open(outfile, 'r+') as f:
         data = re.sub(pattern, '', f.read())
         f.seek(0)
         f.truncate()
         for tpl in st:
             date = dt.strftime(tpl[1], '%m/%d/%Y')
-            f.write(f"{date} [1] {{1Y}} Geburtstag {tpl[0]}\n")
+            f.write(f"{date} [1] {{1Y}} {BIRTHDAY} {tpl[0]}\n")
         f.write(data)
 
 
